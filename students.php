@@ -166,7 +166,7 @@ $result = $conn->query($sql);
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="birthDate">生日</label>
+                            <label for="birthDate">生日 (西元年/月/日)</label>
                             <input type="date" class="form-control" id="birthDate" name="birthDate" required>
                         </div>
                     </div>
