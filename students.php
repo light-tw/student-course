@@ -19,6 +19,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]) && $_POST["a
     }
 }
 
+// 編輯學生
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]) && $_POST["action"] == "edit") {
+    $studentID = $_POST["studentID"];
+    $name = $_POST["name"];
+    $department = $_POST["department"];
+    $class = $_POST["class"];
+    $gender = $_POST["gender"];
+    $birthDate = $_POST["birthDate"];
+
+    $sql = "UPDATE Student SET
+            name = '$name',
+            departmentID = (SELECT departmentID FROM Department WHERE departmentName = '$department'),
+            class = '$class',
+            gender = '$gender',
+            birthDate = '$birthDate'
+            WHERE studentID = '$studentID'";
+    if ($conn->query($sql) === TRUE) {
+        echo "更新學生資料成功";
+    } else {
+        echo "Error: " . $sql . "<br>" . $conn->error;
+    }
+}
+
+// 刪除學生
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]) && $_POST["action"] == "delete") {
+    $studentID = $_POST["studentID"];
+
+    $sql = "DELETE FROM Student WHERE studentID = '$studentID'";
+    if ($conn->query($sql) === TRUE) {
+        echo "刪除學生成功";
+    } else {
+        echo "Error: " . $sql . "<br>" . $conn->error;
+    }
+}
+
 // 獲取學生列表
 $page = isset($_GET['page']) ? $_GET['page'] : 1;
 $start = ($page - 1) * 20;
@@ -72,6 +107,7 @@ $result = $conn->query($sql);
         <table class="table table-striped">
             <thead>
                 <tr>
+                    <th>操作</th>
                     <th>姓名</th>
                     <th>學號</th>
                     <th>科系</th>
@@ -85,6 +121,10 @@ $result = $conn->query($sql);
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
                         echo "<tr>";
+                        echo "<td>
+                                <a href='#' class='btn btn-primary btn-sm' data-toggle='modal' data-target='#editStudentModal' data-studentid='" . $row["studentID"] . "' data-name='" . $row["name"] . "' data-department='" . $row["departmentName"] . "' data-class='" . $row["class"] . "' data-gender='" . $row["gender"] . "' data-birthdate='" . $row["birthDate"] . "'>編輯</a>
+                                <a href='#' class='btn btn-danger btn-sm' data-toggle='modal' data-target='#deleteStudentModal' data-studentid='" . $row["studentID"] . "'>刪除</a>
+                              </td>";
                         echo "<td>" . $row["name"] . "</td>";
                         echo "<td>" . $row["studentID"] . "</td>";
                         echo "<td>" . $row["departmentName"] . "</td>";
@@ -94,7 +134,7 @@ $result = $conn->query($sql);
                         echo "</tr>";
                     }
                 } else {
-                    echo "<tr><td colspan='6'>沒有學生資料</td></tr>";
+                    echo "<tr><td colspan='7'>沒有學生資料</td></tr>";
                 }
                 ?>
             </tbody>
@@ -178,7 +218,87 @@ $result = $conn->query($sql);
             </div>
         </div>
     </div>
-    
+
+    <!-- 編輯學生 Modal -->
+    <div class="modal fade" id="editStudentModal" tabindex="-1" role="dialog" aria-labelledby="editStudentModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editStudentModalLabel">編輯學生資料</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="students.php" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" id="editStudentID" name="studentID">
+                        <div class="form-group">
+                            <label for="editName">姓名</label>
+                            <input type="text" class="form-control" id="editName" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editDepartment">科系</label>
+                            <select class="form-control" id="editDepartment" name="department" required>
+                                <?php
+                                $sql = "SELECT departmentName FROM Department";
+                                $result = $conn->query($sql);
+                                if ($result->num_rows > 0) {
+                                    while ($row = $result->fetch_assoc()) {
+                                        echo "<option value='" . $row["departmentName"] . "'>" . $row["departmentName"] . "</option>";
+                                    }
+                                }
+                                ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editClass">班級</label>
+                            <input type="text" class="form-control" id="editClass" name="class" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editGender">性別</label>
+                            <select class="form-control" id="editGender" name="gender" required>
+                                <option value="男">男</option>
+                                <option value="女">女</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editBirthDate">生日</label>
+                            <input type="date" class="form-control" id="editBirthDate" name="birthDate" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary" name="action" value="edit">更新</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 刪除學生 Modal -->
+    <div class="modal fade" id="deleteStudentModal" tabindex="-1" role="dialog" aria-labelledby="deleteStudentModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteStudentModalLabel">刪除學生</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="students.php" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" id="deleteStudentID" name="studentID">
+                        <p>確定要刪除這位學生嗎?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-danger" name="action" value="delete">刪除</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+        
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
