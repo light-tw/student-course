@@ -281,7 +281,7 @@ $result = $conn->query($sql);
             var studentID = button.data('studentid'); // 從按鈕獲取學生ID
             var name = button.data('name'); // 從按鈕獲取姓名
             var department = button.data('department'); // 從按鈕獲取科系
-            var class = button.data('class'); // 從按鈕獲取班級
+            var classValue = button.data('class'); // 從按鈕獲取班級
             var gender = button.data('gender'); // 從按鈕獲取性別
             var birthDate = button.data('birthdate'); // 從按鈕獲取生日
     
@@ -289,7 +289,7 @@ $result = $conn->query($sql);
             modal.find('#editStudentID').val(studentID); // 設置隱藏的學生ID欄位
             modal.find('#editName').val(name); // 設置姓名欄位
             modal.find('#editDepartment').val(department); // 設置科系欄位
-            modal.find('#editClass').val(class); // 設置班級欄位
+            modal.find('#editClass').val(classValue); // 設置班級欄位
             modal.find('#editGender').val(gender); // 設置性別欄位
             modal.find('#editBirthDate').val(birthDate); // 設置生日欄位
         });
