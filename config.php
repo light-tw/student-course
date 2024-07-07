@@ -1,8 +1,8 @@
 <?php
 $servername = "localhost";
-$username = "你的資料庫使用者名稱";
-$password = "你的資料庫密碼";
-$database = "student_course_system";
+$username = "root";
+$password = "";
+$database = "student-course";
 
 // 建立連線
 $conn = new mysqli($servername, $username, $password, $database);

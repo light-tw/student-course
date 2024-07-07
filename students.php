@@ -166,4 +166,18 @@ $result = $conn->query($sql);
                             </select>
                         </div>
                         <div class="form-group">
+                            <label for="birthDate">生日</label>
+                            <input type="date" class="form-control" id="birthDate" name="birthDate" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary" name="action" value="add">新增</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
  
